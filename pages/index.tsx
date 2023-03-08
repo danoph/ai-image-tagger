@@ -31,13 +31,13 @@ const Home: NextPage = () => {
   return (
     <div className="flex min-h-screen flex-col items-center py-2">
       <Head>
-        <title>Image Classifier</title>
+        <title>AI Image Tagger</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main className="flex w-full flex-1 flex-col items-center px-20">
         <h1 className="text-6xl font-bold text-center">
-          Image Labeler
+          AI Image Tagger
         </h1>
 
         <div className="mt-6 flex max-w-4xl flex-wrap items-center justify-around sm:w-full">
