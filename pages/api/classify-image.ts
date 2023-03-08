@@ -1,8 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { RekognitionClient, DetectLabelsCommand } from "@aws-sdk/client-rekognition";
+import { IncomingForm } from 'formidable';
+import { readFileSync } from 'fs';
 
-// NOTE: these are named differently than the normal AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
-// because Vercel does not allow you to set those environment variables for a deployment
+// we need to disable the default body parser since this endpoint is not accepting JSON
+export const config = {
+  api: {
+    bodyParser: false,
+  }
+};
+
 const client = new RekognitionClient({});
 
 const getImageLabels = async (base64EncodedImage: Uint8Array) => {
@@ -14,18 +21,19 @@ const getImageLabels = async (base64EncodedImage: Uint8Array) => {
     })
   );
 
-  console.log('response', JSON.stringify(response, null, 2));
-
   return response.Labels;
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  //console.log('req.body', req.body);
-  console.log('req', req);
+  const imageBuffer = await (
+    new Promise((resolve, reject) => {
+      new IncomingForm().parse(req, (err, fields, files) => {
+        resolve(readFileSync(files.file.filepath));
+      });
+    })
+  );
 
-  //const labels = await getImageLabels(key);
-
-  const labels = {};
+  const labels = await getImageLabels(imageBuffer);
 
   res.status(200).json(labels);
 }
